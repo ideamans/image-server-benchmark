@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  benchmark-server:
+    image: amazonlinux:2023
+    container_name: benchmark-amazon-linux
+    hostname: benchmark-server
+    working_dir: /workspace
+    volumes:
+      - .:/workspace:rw
+    ports:
+      - "3001-3009:3001-3009"
+    environment:
+      - TERM=xterm-256color
+    stdin_open: true
+    tty: true
+    command: |
+      /bin/bash -c "
+        echo '==================================='
+        echo 'Amazon Linux 2023 - Benchmark Server'
+        echo '==================================='
+        echo ''
+        echo 'Quick start commands:'
+        echo '  ./scripts/setup-amazon-linux.sh   # Install all dependencies'
+        echo '  ./scripts/install-server-deps.sh  # Install Node packages'
+        echo '  ./start-servers.sh               # Start all servers'
+        echo ''
+        echo 'Or step by step:'
+        echo '  yum update -y && yum install -y git curl wget'
+        echo '  ./scripts/setup-server.sh'
+        echo '  ./scripts/start-servers.sh'
+        echo ''
+        exec /bin/bash
+      "

@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@benchmark/common": "file:../../common",
-    "hono": "^3.12.6",
-    "@hono/node-server": "^1.4.1",
+    "hono": "^4.0.0",
+    "@hono/node-server": "^1.14.4",
     "node-fetch": "^3.3.2"
   }
 }

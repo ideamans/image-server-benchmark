@@ -68,8 +68,8 @@ func main() {
 
 	// Start server
 	port := common.GetServerPort(3) // Fiber uses offset 3 (port 3004)
-	log.Printf("Fiber server listening on port %d", port)
-	if err := app.Listen(fmt.Sprintf(":%d", port)); err != nil {
+	log.Printf("Fiber server listening on 0.0.0.0:%d", port)
+	if err := app.Listen(fmt.Sprintf("0.0.0.0:%d", port)); err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}
 }

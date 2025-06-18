@@ -4,12 +4,19 @@ use futures::StreamExt;
 use rocket::fs::NamedFile;
 use rocket::http::{ContentType, Status};
 use rocket::response::content::RawHtml;
+use rocket::serde::{Deserialize, Serialize, json::Json};
 use rocket::{routes, State};
 use std::env;
 use std::path::{Path, PathBuf};
 
 struct AppConfig {
     origin_url_base: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct HealthResponse {
+    status: String,
 }
 
 #[rocket::get("/local/<size>")]
@@ -65,6 +72,13 @@ async fn proxy_image(
     Ok((content_type, body))
 }
 
+#[rocket::get("/health")]
+async fn health() -> Json<HealthResponse> {
+    Json(HealthResponse {
+        status: "ok".to_string(),
+    })
+}
+
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
     // Load .env file
@@ -100,7 +114,7 @@ async fn main() -> Result<(), rocket::Error> {
     
     let _rocket = rocket::custom(rocket_config)
         .manage(config)
-        .mount("/", routes![serve_local_image, proxy_image])
+        .mount("/", routes![health, serve_local_image, proxy_image])
         .launch()
         .await?;
     

@@ -10,3 +10,4 @@ dotenv = { workspace = true }
 reqwest = { workspace = true }
 futures = { workspace = true }
 bytes = { workspace = true }
+serde = { version = "1.0", features = ["derive"] }

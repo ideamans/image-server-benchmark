@@ -3,12 +3,18 @@ use actix_web::{middleware, web, App, HttpResponse, HttpServer, Result};
 use bytes::Bytes;
 use dotenv::dotenv;
 use futures::StreamExt;
+use serde::{Deserialize, Serialize};
 use std::env;
 use std::path::PathBuf;
 
 #[derive(Clone)]
 struct AppState {
     origin_url_base: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct HealthResponse {
+    status: String,
 }
 
 async fn serve_local_image(size: web::Path<String>) -> Result<NamedFile> {
@@ -45,7 +51,8 @@ async fn proxy_image(
         .headers()
         .get("content-type")
         .and_then(|v| v.to_str().ok())
-        .unwrap_or("image/jpeg");
+        .unwrap_or("image/jpeg")
+        .to_string();
     
     let mut body = Vec::new();
     let mut stream = response.bytes_stream();
@@ -61,6 +68,13 @@ async fn proxy_image(
     Ok(HttpResponse::Ok()
         .content_type(content_type)
         .body(Bytes::from(body)))
+}
+
+async fn health() -> Result<HttpResponse> {
+    let response = HealthResponse {
+        status: "ok".to_string(),
+    };
+    Ok(HttpResponse::Ok().json(response))
 }
 
 #[actix_web::main]
@@ -94,6 +108,10 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(app_state.clone())
             .wrap(middleware::Logger::default())
+            .service(
+                web::resource("/health")
+                    .route(web::get().to(health))
+            )
             .service(
                 web::resource("/local/{size}")
                     .route(web::get().to(serve_local_image))

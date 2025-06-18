@@ -71,14 +71,14 @@ func main() {
 	
 	// Configure server
 	e.Server = &http.Server{
-		Addr:         fmt.Sprintf(":%d", port),
+		Addr:         fmt.Sprintf("0.0.0.0:%d", port),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
 	}
 	
-	log.Printf("Echo server listening on port %d", port)
-	if err := e.Start(fmt.Sprintf(":%d", port)); err != nil && err != http.ErrServerClosed {
+	log.Printf("Echo server listening on 0.0.0.0:%d", port)
+	if err := e.Start(fmt.Sprintf("0.0.0.0:%d", port)); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("Error starting server: %v", err)
 	}
 }

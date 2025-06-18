@@ -3,11 +3,13 @@ use axum::{
     http::{header, StatusCode},
     response::{IntoResponse, Response},
     routing::get,
+    Json,
     Router,
 };
 use bytes::Bytes;
 use dotenv::dotenv;
 use futures::StreamExt;
+use serde::{Deserialize, Serialize};
 use std::env;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -19,6 +21,11 @@ use tracing::info;
 #[derive(Clone)]
 struct AppState {
     origin_url_base: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct HealthResponse {
+    status: String,
 }
 
 async fn serve_local_image(Path(size): Path<String>) -> Result<impl IntoResponse, StatusCode> {
@@ -66,7 +73,8 @@ async fn proxy_image(
         .headers()
         .get("content-type")
         .and_then(|v| v.to_str().ok())
-        .unwrap_or("image/jpeg");
+        .unwrap_or("image/jpeg")
+        .to_string();
     
     let mut body = Vec::new();
     let mut stream = response.bytes_stream();
@@ -83,6 +91,13 @@ async fn proxy_image(
         [(header::CONTENT_TYPE, content_type)],
         Bytes::from(body),
     ).into_response())
+}
+
+async fn health() -> impl IntoResponse {
+    let response = HealthResponse {
+        status: "ok".to_string(),
+    };
+    Json(response)
 }
 
 #[tokio::main]
@@ -121,6 +136,7 @@ async fn main() {
     
     // Build our application with routes
     let app = Router::new()
+        .route("/health", get(health))
         .route("/local/:size", get(serve_local_image))
         .route("/proxy/:size", get(proxy_image))
         .layer(TraceLayer::new_for_http())

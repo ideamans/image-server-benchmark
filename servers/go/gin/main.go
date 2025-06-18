@@ -63,10 +63,10 @@ func main() {
 
 	// Start server
 	port := common.GetServerPort(4) // Gin uses offset 4 (port 3005)
-	log.Printf("Gin server listening on port %d", port)
+	log.Printf("Gin server listening on 0.0.0.0:%d", port)
 	
 	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", port),
+		Addr:         fmt.Sprintf("0.0.0.0:%d", port),
 		Handler:      router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,

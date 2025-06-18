@@ -10,33 +10,29 @@ for port in {3001..3009}; do
   lsof -ti:$port | xargs kill -9 2>/dev/null || true
 done
 
+# Build all servers first
+echo "Building all servers..."
+(cd "$PROJECT_ROOT/servers" && make build-release)
+
 # Start TypeScript servers
+echo ""
 echo "Starting TypeScript servers..."
 echo "- Starting Fastify..."
-(cd "$PROJECT_ROOT/servers/typescript/fastify" && npm start > /tmp/fastify.log 2>&1) &
+(cd "$PROJECT_ROOT/servers/typescript/fastify" && make run > /tmp/fastify.log 2>&1) &
 
 echo "- Starting Hono..."
-(cd "$PROJECT_ROOT/servers/typescript/hono" && npm start > /tmp/hono.log 2>&1) &
+(cd "$PROJECT_ROOT/servers/typescript/hono" && make run > /tmp/hono.log 2>&1) &
 
 echo "- Starting Elysia..."
 if command -v bun &> /dev/null; then
-  (cd "$PROJECT_ROOT/servers/typescript/elysia" && bun start > /tmp/elysia.log 2>&1) &
+  (cd "$PROJECT_ROOT/servers/typescript/elysia" && make run > /tmp/elysia.log 2>&1) &
 else
   echo "  Warning: Bun not installed, skipping Elysia"
   echo "Bun not installed" > /tmp/elysia.log
 fi
 
-# Build Go servers first
-echo ""
-echo "Building Go servers..."
-echo "- Building Fiber..."
-(cd "$PROJECT_ROOT/servers/go/fiber" && go build -o fiber-server)
-echo "- Building Gin..."
-(cd "$PROJECT_ROOT/servers/go/gin" && go build -o gin-server)
-echo "- Building Echo..."
-(cd "$PROJECT_ROOT/servers/go/echo" && go build -o echo-server)
-
 # Start Go servers
+echo ""
 echo "Starting Go servers..."
 echo "- Starting Fiber..."
 (cd "$PROJECT_ROOT/servers/go/fiber" && ./fiber-server > /tmp/fiber.log 2>&1) &
@@ -47,12 +43,8 @@ echo "- Starting Gin..."
 echo "- Starting Echo..."
 (cd "$PROJECT_ROOT/servers/go/echo" && ./echo-server > /tmp/echo.log 2>&1) &
 
-# Build Rust servers first
-echo ""
-echo "Building Rust servers..."
-(cd "$PROJECT_ROOT/servers/rust" && ./build.sh)
-
 # Start Rust servers
+echo ""
 echo "Starting Rust servers..."
 echo "- Starting Actix..."
 (cd "$PROJECT_ROOT/servers/rust/actix" && cargo run --release > /tmp/actix.log 2>&1) &

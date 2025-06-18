@@ -1,0 +1,13 @@
+{
+  "name": "@benchmark/k6-tests",
+  "version": "1.0.0",
+  "description": "k6 benchmark tests for image server performance",
+  "type": "module",
+  "scripts": {
+    "test": "node run-benchmark.js",
+    "config:check": "node config.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

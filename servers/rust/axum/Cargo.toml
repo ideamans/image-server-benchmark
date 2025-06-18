@@ -1,0 +1,16 @@
+[package]
+name = "axum-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7", features = ["tokio"] }
+tower = { version = "0.5", features = ["full"] }
+tower-http = { version = "0.6", features = ["fs", "trace"] }
+tokio = { workspace = true }
+dotenv = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+bytes = { workspace = true }
+tracing = "0.1"
+tracing-subscriber = "0.3"

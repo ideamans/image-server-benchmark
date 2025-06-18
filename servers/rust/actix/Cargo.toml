@@ -1,0 +1,15 @@
+[package]
+name = "actix-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.9"
+actix-files = "0.6"
+tokio = { workspace = true }
+dotenv = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+bytes = { workspace = true }
+env_logger = "0.11"
+log = "0.4"

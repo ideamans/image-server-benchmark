@@ -1,0 +1,17 @@
+{
+  "name": "@benchmark/elysia-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "start": "bun run index.ts",
+    "dev": "bun run --watch index.ts"
+  },
+  "dependencies": {
+    "@benchmark/common": "file:../../common",
+    "elysia": "^0.8.9"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  }
+}

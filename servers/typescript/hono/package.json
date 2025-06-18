@@ -1,0 +1,16 @@
+{
+  "name": "@benchmark/hono-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "@benchmark/common": "file:../../common",
+    "hono": "^3.12.6",
+    "@hono/node-server": "^1.4.1",
+    "node-fetch": "^3.3.2"
+  }
+}

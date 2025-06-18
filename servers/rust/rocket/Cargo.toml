@@ -1,0 +1,12 @@
+[package]
+name = "rocket-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rocket = { version = "0.5", features = ["json"] }
+tokio = { workspace = true }
+dotenv = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+bytes = { workspace = true }

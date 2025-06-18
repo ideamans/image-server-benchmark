@@ -1,0 +1,59 @@
+# Amazon Linux 2023 with all dependencies pre-installed
+FROM amazonlinux:2023
+
+# Install system dependencies
+RUN dnf update -y && \
+    dnf groupinstall -y "Development Tools" && \
+    dnf install -y \
+        git wget tar gzip which htop vim tmux tree jq lsof \
+        nodejs20 nodejs20-npm && \
+    dnf clean all
+
+# Create symlinks for node and npm
+RUN ln -sf /usr/bin/node20 /usr/bin/node && \
+    ln -sf /usr/bin/npm20 /usr/bin/npm
+
+# Install Go
+ARG GO_VERSION=1.21.5
+RUN ARCH=$(uname -m) && \
+    GO_ARCH=$([ "$ARCH" = "aarch64" ] && echo "arm64" || echo "amd64") && \
+    wget -q "https://go.dev/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" && \
+    tar -C /usr/local -xzf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" && \
+    rm "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
+
+# Set up environment
+ENV PATH="/usr/local/go/bin:${PATH}"
+ENV GOPATH="/root/go"
+ENV PATH="${GOPATH}/bin:${PATH}"
+
+# Set working directory
+WORKDIR /workspace
+
+# Add entrypoint script
+RUN echo '#!/bin/bash\n\
+echo "==================================="\n\
+echo "Amazon Linux 2023 - Ready"\n\
+echo "==================================="\n\
+echo ""\n\
+echo "Installed:"\n\
+echo "  Node.js: $(node --version)"\n\
+echo "  Go: $(go version)"\n\
+echo "  Rust: $(rustc --version)"\n\
+echo "  Bun: $(bun --version)"\n\
+echo ""\n\
+echo "Quick start:"\n\
+echo "  make clean && make build-release"\n\
+echo "  ./start-servers.sh"\n\
+echo ""\n\
+exec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/bin/bash"]

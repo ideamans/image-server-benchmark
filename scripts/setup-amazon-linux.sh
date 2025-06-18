@@ -9,9 +9,13 @@ yum update -y
 
 # Install basic tools
 echo "Installing basic tools..."
+# curl is often pre-installed or conflicts with curl-minimal, so we check first
+if ! command -v curl &> /dev/null; then
+  yum install -y curl || yum install -y curl-minimal
+fi
+
 yum install -y \
   git \
-  curl \
   wget \
   tar \
   gzip \

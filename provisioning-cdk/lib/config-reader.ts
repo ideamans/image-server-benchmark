@@ -23,6 +23,9 @@ export interface BenchmarkConfig {
   maxVus: number;
   errorThreshold: number;
   responseTimeThreshold: number;
+  
+  // インスタンス管理設定
+  autoShutdownMinutes: number;
 }
 
 export class ConfigReader {
@@ -60,6 +63,9 @@ export class ConfigReader {
       responseTimeThreshold: parseInt(
         process.env.RESPONSE_TIME_THRESHOLD || "1000"
       ),
+      
+      // インスタンス管理設定
+      autoShutdownMinutes: parseInt(process.env.AUTO_SHUTDOWN_MINUTES || "180"),
     };
 
     return config;

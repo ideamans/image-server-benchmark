@@ -236,6 +236,57 @@ chown ec2-user:ec2-user /home/ec2-user/SETUP_INSTRUCTIONS.txt
 # MOTDの設定
 sudo sh -c 'cat /home/ec2-user/SETUP_INSTRUCTIONS.txt > /etc/motd'
 
+# 自動シャットダウンの設定
+AUTO_SHUTDOWN_MINUTES="${config.autoShutdownMinutes}"
+if [ "$AUTO_SHUTDOWN_MINUTES" -gt 0 ]; then
+  echo "Setting up auto-shutdown after $AUTO_SHUTDOWN_MINUTES minutes..."
+  
+  # シャットダウンスクリプトの作成
+  cat << 'SHUTDOWN_SCRIPT' > /usr/local/bin/auto-shutdown.sh
+#!/bin/bash
+logger -t auto-shutdown "Auto-shutdown initiated after $AUTO_SHUTDOWN_MINUTES minutes"
+wall "This instance will shutdown in 5 minutes due to auto-shutdown policy!"
+sleep 300
+shutdown -h now
+SHUTDOWN_SCRIPT
+  
+  chmod +x /usr/local/bin/auto-shutdown.sh
+  
+  # systemdタイマーの作成
+  cat << TIMER_EOF > /etc/systemd/system/auto-shutdown.timer
+[Unit]
+Description=Auto shutdown timer
+
+[Timer]
+OnBootSec=$AUTO_SHUTDOWN_MINUTES\min
+Unit=auto-shutdown.service
+
+[Install]
+WantedBy=timers.target
+TIMER_EOF
+
+  cat << 'SERVICE_EOF' > /etc/systemd/system/auto-shutdown.service
+[Unit]
+Description=Auto shutdown service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/auto-shutdown.sh
+SERVICE_EOF
+
+  # タイマーの有効化
+  systemctl daemon-reload
+  systemctl enable auto-shutdown.timer
+  systemctl start auto-shutdown.timer
+  
+  echo "Auto-shutdown timer enabled. Instance will shutdown after $AUTO_SHUTDOWN_MINUTES minutes."
+  
+  # MOTDに自動シャットダウンの警告を追加
+  echo "" >> /etc/motd
+  echo "⚠️  WARNING: This instance will auto-shutdown after $AUTO_SHUTDOWN_MINUTES minutes from boot!" >> /etc/motd
+  echo "To cancel: sudo systemctl stop auto-shutdown.timer" >> /etc/motd
+fi
+
 echo "User data script completed successfully"
 `;
 

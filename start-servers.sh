@@ -10,6 +10,12 @@ for port in {3001..3009}; do
   lsof -ti:$port | xargs kill -9 2>/dev/null || true
 done
 
+# Install dependencies for servers/common first
+echo "Installing common dependencies..."
+if [ ! -d "$PROJECT_ROOT/servers/common/node_modules" ]; then
+  (cd "$PROJECT_ROOT/servers/common" && npm install)
+fi
+
 # Build all servers first
 echo "Building all servers..."
 (cd "$PROJECT_ROOT/servers" && make build-release)

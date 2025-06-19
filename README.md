@@ -104,7 +104,7 @@ BENCHMARK_COOLDOWN_DURATION=3s # クールダウン時間
 ./run-amazon-linux.sh
 
 # コンテナ内で環境構築（初回のみ、5-10分程度）
-./setup-amazon-linux.sh
+sudo ./setup-amazon-linux.sh
 
 # サーバーをすべて起動
 ./start-servers.sh
@@ -197,16 +197,16 @@ CDKの出力から、サーバーとクライアントのIPアドレスを確認
 ssh -i ~/.ssh/benchmark-key.pem ec2-user@<server-ip>
 
 # リポジトリがすでにクローンされているので
-cd image-server-benchmark
-./setup-amazon-linux.sh
+cd ~/image-server-benchmark
+sudo ./setup-amazon-linux.sh
 ./start-servers.sh
 
 # クライアントインスタンスに接続（別ターミナル）
 ssh -i ~/.ssh/benchmark-key.pem ec2-user@<client-ip>
 
-cd image-server-benchmark
-./setup-amazon-linux.sh
+cd ~/image-server-benchmark
 echo "SERVER_IP=<server-private-ip>" >> .env
+sudo ./setup-amazon-linux.sh
 ./run-benchmark.sh
 ```
 
@@ -286,12 +286,29 @@ for port in {3001..3009}; do
 done
 ```
 
-### Rust のビルドエラー（openssl-sys）
+### npm install でdotenvが見つからない
 
-Amazon Linux の場合：
+各サーバーが`servers/common`モジュールに依存しているため、commonモジュールのインストールが必要です：
 
 ```bash
-dnf install -y openssl-devel pkg-config
+cd ~/image-server-benchmark
+cd servers/common && npm install
+cd ../typescript/fastify && npm install
+cd ../typescript/hono && npm install
+```
+
+または、セットアップスクリプトを再実行：
+
+```bash
+sudo ./setup-amazon-linux.sh
+```
+
+### Rust のビルドエラー（openssl-sys）
+
+Amazon Linux の場合（setup-amazon-linux.shで自動インストールされます）：
+
+```bash
+sudo dnf install -y openssl-devel pkg-config
 ```
 
 macOS の場合：

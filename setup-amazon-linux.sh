@@ -1,7 +1,15 @@
 #!/bin/bash
 set -e
 
-echo "=== Setting up Amazon Linux 2023 for Image Server Benchmark ==="
+echo "============================================================"
+echo "   Amazon Linux 2023 - Complete Setup Script"
+echo "============================================================"
+echo ""
+echo "This script will set up everything needed for:"
+echo "  - Running servers (./start-servers.sh)"
+echo "  - Running benchmarks (./run-benchmark.sh)"
+echo ""
+echo "Starting setup..."
 
 # Detect architecture
 ARCH=$(uname -m)
@@ -163,6 +171,17 @@ else
     echo "Warning: Bun not found at $BUN_INSTALL/bin/bun"
 fi
 
+# Install k6 for benchmarking
+echo ""
+echo "Installing k6 for benchmarking..."
+if ! command -v k6 &> /dev/null; then
+    # Install k6 from rpm repository
+    dnf install -y https://dl.k6.io/rpm/repo.rpm
+    dnf install -y k6
+else
+    echo "k6 is already installed"
+fi
+
 # Install server dependencies
 echo ""
 echo "Installing server dependencies..."
@@ -173,6 +192,11 @@ cd ../hono && npm install
 if command -v bun &> /dev/null; then
   cd ../elysia && bun install
 fi
+
+# Install k6 dependencies
+echo ""
+echo "Installing k6 script dependencies..."
+cd /workspace/k6 && npm install
 
 # Build servers
 echo ""
@@ -201,18 +225,17 @@ echo "  npm: $(npm --version 2>/dev/null || echo 'Not found')"
 echo "  Go: $(go version 2>/dev/null || echo 'Not found')"
 echo "  Rust: $(rustc --version 2>/dev/null || echo 'Not found')"
 echo "  Bun: $(bun --version 2>/dev/null || echo 'Not found')"
+echo "  k6: $(k6 version 2>/dev/null || echo 'Not found')"
 echo ""
-echo "Command availability check:"
-echo "  which node: $(which node 2>/dev/null || echo 'Not in PATH')"
-echo "  which go: $(which go 2>/dev/null || echo 'Not in PATH')"
-echo "  which rustc: $(which rustc 2>/dev/null || echo 'Not in PATH')"
-echo "  which cargo: $(which cargo 2>/dev/null || echo 'Not in PATH')"
-echo "  which bun: $(which bun 2>/dev/null || echo 'Not in PATH')"
+echo "Everything is ready!"
 echo ""
-echo "All servers are built and ready to run!"
-echo ""
-echo "To start servers, run:"
+echo "To run as SERVER:"
 echo "  ./start-servers.sh"
+echo ""
+echo "To run as CLIENT:"
+echo "  # First, set SERVER_IP in .env file"
+echo "  echo \"SERVER_IP=<server-ip>\" >> .env"
+echo "  ./run-benchmark.sh"
 echo ""
 echo "Note: If you exit and re-enter the container, run:"
 echo "  source /etc/profile.d/benchmark.sh"

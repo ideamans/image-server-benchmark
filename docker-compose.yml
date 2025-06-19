@@ -4,7 +4,6 @@ services:
   benchmark-server:
     image: amazonlinux:2023
     container_name: benchmark-amazon-linux
-    hostname: benchmark-server
     working_dir: /workspace
     volumes:
       - .:/workspace:rw
@@ -14,20 +13,4 @@ services:
       - TERM=xterm-256color
     stdin_open: true
     tty: true
-    command: |
-      /bin/bash -c "
-        echo '==================================='
-        echo 'Amazon Linux 2023 - Benchmark Server'
-        echo '==================================='
-        echo ''
-        echo 'To setup and run:'
-        echo '  ./scripts/setup-amazon-linux.sh'
-        echo '  ./start-servers.sh'
-        echo ''
-        echo 'That'\''s it! The setup script will:'
-        echo '  - Install all system dependencies'
-        echo '  - Install all server dependencies'
-        echo '  - Build all servers'
-        echo ''
-        exec /bin/bash
-      "
+    command: /bin/bash

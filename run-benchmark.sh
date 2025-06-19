@@ -4,7 +4,7 @@ set -e
 echo "=== Image Server Benchmark ==="
 
 # Load environment variables
-source "$(dirname "$0")/utils/load-env.sh"
+source "$(dirname "$0")/scripts/utils/load-env.sh"
 
 # Change to project root
 cd "$PROJECT_ROOT"

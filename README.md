@@ -1,6 +1,99 @@
 # 画像配信 Web サーバー ベンチマーク
 
-異なる言語・フレームワークで実装された画像配信サーバーの性能を比較するベンチマークツールです。
+AI によって生成した、異なる言語・フレームワークで実装された画像配信サーバーの性能を比較するベンチマークツールです。
+
+## 結果
+
+ベンチマークは AWS EC2 インスタンス同士で行いました。
+
+- サーバー `t3.small`
+- k6 クライアント ``m7i.2xlarge`
+- ローカルネットワーク接続
+
+```
+=== Benchmark Summary - Performance Rankings ===
+
+--- Local 20KB Image ---
+Rank  Framework    Language     RPS      Avg RT    P95 RT    Error%
+----  -----------  ----------   -------  --------  --------  ------
+1     Fiber        Go           7257.29      1.68ms      6.81ms    0.00
+2     Gin          Go           7064.58      2.11ms      7.33ms    0.00
+3     Echo         Go           6500.14      3.20ms     11.86ms    0.00
+4     Hono         TypeScript   3707.23     14.20ms     29.38ms    0.00
+5     Axum         Rust         3384.95     17.20ms     56.65ms    0.00
+6     Rocket       Rust         3308.62     17.54ms     57.45ms    0.00
+7     Fastify      TypeScript   2289.01     29.72ms     67.14ms    0.00
+8     Actix        Rust          940.73     87.86ms    307.63ms    0.00
+
+--- Local 50KB Image ---
+Rank  Framework    Language     RPS      Avg RT    P95 RT    Error%
+----  -----------  ----------   -------  --------  --------  ------
+1     Fiber        Go           5033.06      5.63ms     21.34ms    0.00
+2     Gin          Go           4959.71      5.93ms     22.34ms    0.00
+3     Echo         Go           4926.57      6.04ms     22.89ms    0.00
+4     Hono         TypeScript   2950.53     19.96ms     50.66ms    0.00
+5     Fastify      TypeScript   2056.70     33.75ms     80.42ms    0.00
+6     Rocket       Rust          386.70    230.18ms    754.77ms    0.00
+7     Axum         Rust          386.51    229.83ms    706.69ms    1.00
+8     Actix        Rust          381.38    230.91ms    737.35ms    1.00
+
+--- Local 100KB Image ---
+Rank  Framework    Language     RPS      Avg RT    P95 RT    Error%
+----  -----------  ----------   -------  --------  --------  ------
+1     Fiber        Go           2784.44     15.10ms     47.14ms    0.00
+2     Gin          Go           2769.12     15.88ms     49.86ms    0.00
+3     Echo         Go           2759.48     15.93ms     49.09ms    0.00
+4     Hono         TypeScript   2195.27     28.26ms     70.18ms    0.00
+5     Fastify      TypeScript   1503.83     48.72ms    102.34ms    0.00
+6     Axum         Rust          171.83    505.34ms   1592.70ms    2.00
+7     Rocket       Rust          170.95    516.56ms   1554.66ms    7.00
+8     Actix        Rust          166.63    505.44ms   1543.72ms    9.00
+
+--- Proxy 20KB Image ---
+Rank  Framework    Language     RPS      Avg RT    P95 RT    Error%
+----  -----------  ----------   -------  --------  --------  ------
+1     Gin          Go           2388.58     28.09ms     45.32ms    0.00
+2     Fiber        Go           2376.08     28.26ms     47.88ms    0.00
+3     Echo         Go           2310.39     29.42ms     48.95ms    0.00
+4     Hono         TypeScript   1118.24     72.15ms    148.65ms    0.00
+5     Fastify      TypeScript    971.17     84.69ms    161.79ms    0.00
+6     Actix        Rust           55.30   1698.96ms   3521.80ms    0.00
+7     Rocket       Rust           53.26   1769.17ms   4438.05ms    0.00
+8     Axum         Rust           51.23   1843.31ms   4184.50ms    0.00
+
+--- Proxy 50KB Image ---
+Rank  Framework    Language     RPS      Avg RT    P95 RT    Error%
+----  -----------  ----------   -------  --------  --------  ------
+1     Gin          Go           2251.96     29.95ms     50.00ms    0.00
+2     Fiber        Go           2194.17     30.96ms     50.56ms    0.00
+3     Echo         Go           1641.26     46.00ms     59.90ms    0.00
+4     Hono         TypeScript    897.44     92.17ms    181.68ms    0.00
+5     Fastify      TypeScript    893.69     92.60ms    174.01ms    0.00
+6     Actix        Rust           54.84   1712.13ms   3487.93ms    0.00
+7     Rocket       Rust           52.72   1785.04ms   4632.42ms    0.00
+8     Axum         Rust           51.90   1815.53ms   4180.09ms    0.00
+
+--- Proxy 100KB Image ---
+Rank  Framework    Language     RPS      Avg RT    P95 RT    Error%
+----  -----------  ----------   -------  --------  --------  ------
+1     Gin          Go           1819.00     37.82ms     63.46ms    0.00
+2     Fiber        Go           1743.29     39.99ms     63.91ms    0.00
+3     Hono         TypeScript    710.43    118.43ms    223.56ms    0.00
+4     Fastify      TypeScript    680.28    124.27ms    232.00ms    0.00
+5     Echo         Go            178.28    514.44ms   1717.30ms    7.00
+6     Rocket       Rust           52.01   1818.53ms   4202.35ms    0.00
+7     Actix        Rust           51.58   1824.83ms   3702.99ms    0.00
+8     Axum         Rust           50.32   1876.86ms   4509.03ms    0.00
+
+--- Overall Statistics ---
+Best Local Performance: Fiber (7257.29 RPS for 20k)
+Best Proxy Performance: Gin (2388.58 RPS for 20k)
+
+=== Benchmark Complete ===
+Total time: 88m 34s
+
+Benchmark complete!
+```
 
 ## 概要
 
@@ -47,11 +140,11 @@
   - Bun（最新版）
   - k6（ベンチマークツール）
 
-### AWS環境（CDKでEC2をプロビジョニングする場合）
+### AWS 環境（CDK で EC2 をプロビジョニングする場合）
 
 - AWS CLI がインストールされ、設定済みであること
 - AWS CDK がインストールされていること（`npm install -g aws-cdk`）
-- EC2キーペアが作成済みであること
+- EC2 キーペアが作成済みであること
 
 ## セットアップ手順
 
@@ -163,9 +256,9 @@ aws s3api put-object-acl --bucket your-bucket --key images/50k.jpg --acl public-
 aws s3api put-object-acl --bucket your-bucket --key images/100k.jpg --acl public-read
 ```
 
-## AWS CDKでEC2環境を構築する場合
+## AWS CDK で EC2 環境を構築する場合
 
-### CDKのセットアップ
+### CDK のセットアップ
 
 ```bash
 # .envファイルでAWSプロファイルを指定（オプション）
@@ -190,7 +283,7 @@ npx cdk deploy --parameters KeyPairName=benchmark-key
 
 ### デプロイ後の作業
 
-CDKの出力から、サーバーとクライアントのIPアドレスを確認し、SSHで接続します：
+CDK の出力から、サーバーとクライアントの IP アドレスを確認し、SSH で接続します：
 
 ```bash
 # サーバーインスタンスに接続
@@ -286,9 +379,9 @@ for port in {3001..3009}; do
 done
 ```
 
-### npm install でdotenvが見つからない
+### npm install で dotenv が見つからない
 
-各サーバーが`servers/common`モジュールに依存しているため、commonモジュールのインストールが必要です：
+各サーバーが`servers/common`モジュールに依存しているため、common モジュールのインストールが必要です：
 
 ```bash
 cd ~/image-server-benchmark
@@ -305,7 +398,7 @@ sudo ./setup-amazon-linux.sh
 
 ### Rust のビルドエラー（openssl-sys）
 
-Amazon Linux の場合（setup-amazon-linux.shで自動インストールされます）：
+Amazon Linux の場合（setup-amazon-linux.sh で自動インストールされます）：
 
 ```bash
 sudo dnf install -y openssl-devel pkg-config

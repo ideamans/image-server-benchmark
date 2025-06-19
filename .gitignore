@@ -254,3 +254,4 @@ Thumbs.db
 *.sw?
 
 results/
+.claude

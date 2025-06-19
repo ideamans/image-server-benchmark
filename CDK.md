@@ -394,11 +394,11 @@ KEY_PAIR_NAME=
 AWS_REGION=us-east-1
 
 # === Instance Configuration ===
-# サーバーインスタンスタイプ（高いCPU性能推奨）
-SERVER_INSTANCE_TYPE=c5.2xlarge
+# サーバーインスタンスタイプ（ARMアーキテクチャ）
+SERVER_INSTANCE_TYPE=m6g.medium
 
-# クライアントインスタンスタイプ
-CLIENT_INSTANCE_TYPE=m5.xlarge
+# クライアントインスタンスタイプ（ARMアーキテクチャ）
+CLIENT_INSTANCE_TYPE=m6g.4xlarge
 
 # === Application Configuration ===
 # プロキシ動作時のオリジンURL（末尾スラッシュ必須）

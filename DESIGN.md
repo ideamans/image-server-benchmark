@@ -38,8 +38,8 @@ KEY_PAIR_NAME=my-benchmark-key
 AWS_REGION=us-east-1
 
 # インスタンスタイプ
-SERVER_INSTANCE_TYPE=c5.2xlarge
-CLIENT_INSTANCE_TYPE=m5.xlarge
+SERVER_INSTANCE_TYPE=t3.small
+CLIENT_INSTANCE_TYPE=t3.small
 
 # ベンチマーク設定
 BENCHMARK_DURATION=60s
@@ -241,16 +241,16 @@ Fastify	TypeScript	20k	proxy	8932	111.8	156.7	0.05
 
 ### サーバー側（インスタンス A）
 
-- **インスタンスタイプ**: c5.2xlarge 以上
-- **vCPU**: 8 以上
-- **メモリ**: 16GB 以上
-- **ネットワーク**: 最大 10Gbps
+- **インスタンスタイプ**: m6g.medium（ARM アーキテクチャ、開発・テスト用）
+- **vCPU**: 2
+- **メモリ**: 1GB
+- **ネットワーク**: 最大 5Gbps
 
 ### クライアント側（インスタンス B）
 
-- **インスタンスタイプ**: m5.xlarge 以上
-- **vCPU**: 4 以上
-- **メモリ**: 16GB 以上
+- **インスタンスタイプ**: m6g.4xlarge（ARM アーキテクチャ、高性能ベンチマーク用）
+- **vCPU**: 8
+- **メモリ**: 32GB
 - **ネットワーク**: 最大 10Gbps
 
 ### 共通設定
@@ -346,8 +346,8 @@ cdk deploy --parameters KeyPairName=benchmark-key
 
 ```bash
 # CDK出力から取得したIPアドレスを使用
-ssh -i benchmark-key.pem ubuntu@<server-instance-ip>
-ssh -i benchmark-key.pem ubuntu@<client-instance-ip>
+ssh -i benchmark-key.pem ec2-user@<server-instance-ip>
+ssh -i benchmark-key.pem ec2-user@<client-instance-ip>
 ```
 
 ### 10.3 サーバー側セットアップ（インスタンス A）

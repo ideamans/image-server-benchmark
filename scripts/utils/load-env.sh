@@ -24,8 +24,8 @@ fi
 : ${ERROR_THRESHOLD:=0.01}
 : ${RESPONSE_TIME_THRESHOLD:=1000}
 : ${AWS_REGION:="us-east-1"}
-: ${SERVER_INSTANCE_TYPE:="c5.2xlarge"}
-: ${CLIENT_INSTANCE_TYPE:="m5.xlarge"}
+: ${SERVER_INSTANCE_TYPE:="m6g.medium"}
+: ${CLIENT_INSTANCE_TYPE:="m6g.4xlarge"}
 
 # Export all variables
 export ORIGIN_URL_BASE SERVER_START_PORT SERVER_WORKER_THREADS

@@ -101,56 +101,74 @@ export class ResultFormatter {
   }
   
   printSummary() {
-    console.log('\n=== Benchmark Summary ===\n');
+    console.log('\n=== Benchmark Summary - Performance Rankings ===\n');
     
-    // Group by framework
-    const byFramework = {};
-    for (const result of this.results) {
-      if (!byFramework[result.Framework]) {
-        byFramework[result.Framework] = [];
-      }
-      byFramework[result.Framework].push(result);
-    }
+    // Define all test cases
+    const testCases = [
+      { type: 'local', size: '20k', name: 'Local 20KB Image' },
+      { type: 'local', size: '50k', name: 'Local 50KB Image' },
+      { type: 'local', size: '100k', name: 'Local 100KB Image' },
+      { type: 'proxy', size: '20k', name: 'Proxy 20KB Image' },
+      { type: 'proxy', size: '50k', name: 'Proxy 50KB Image' },
+      { type: 'proxy', size: '100k', name: 'Proxy 100KB Image' },
+    ];
     
-    // Print summary for each framework
-    for (const [framework, results] of Object.entries(byFramework)) {
-      console.log(`${framework} (${results[0].Language}):`);
+    // Print ranking for each test case
+    for (const testCase of testCases) {
+      console.log(`--- ${testCase.name} ---`);
       
-      // Calculate averages
-      const localResults = results.filter(r => r.Type === 'local');
-      const proxyResults = results.filter(r => r.Type === 'proxy');
+      // Filter and sort results for this test case
+      const filtered = this.results
+        .filter(r => r.Type === testCase.type && r.Image_Size === testCase.size)
+        .sort((a, b) => parseFloat(b.Max_RPS) - parseFloat(a.Max_RPS));
       
-      if (localResults.length > 0) {
-        const avgLocalRPS = localResults.reduce((sum, r) => sum + parseFloat(r.Max_RPS), 0) / localResults.length;
-        console.log(`  Local Avg RPS: ${avgLocalRPS.toFixed(2)}`);
-      }
-      
-      if (proxyResults.length > 0) {
-        const avgProxyRPS = proxyResults.reduce((sum, r) => sum + parseFloat(r.Max_RPS), 0) / proxyResults.length;
-        console.log(`  Proxy Avg RPS: ${avgProxyRPS.toFixed(2)}`);
+      if (filtered.length > 0) {
+        console.log('Rank  Framework    Language     RPS      Avg RT    P95 RT    Error%');
+        console.log('----  -----------  ----------   -------  --------  --------  ------');
+        
+        filtered.forEach((result, index) => {
+          const rank = (index + 1).toString().padEnd(4);
+          const framework = result.Framework.padEnd(11);
+          const language = result.Language.padEnd(10);
+          const rps = parseFloat(result.Max_RPS).toFixed(2).padStart(7);
+          const avgRT = parseFloat(result.Avg_Response_Time_ms).toFixed(2).padStart(8) + 'ms';
+          const p95RT = parseFloat(result.P95_Response_Time_ms).toFixed(2).padStart(8) + 'ms';
+          const errorRate = (parseFloat(result.Error_Rate) * 100).toFixed(2).padStart(6);
+          
+          console.log(`${rank}  ${framework}  ${language}   ${rps}  ${avgRT}  ${p95RT}  ${errorRate}`);
+        });
+      } else {
+        console.log('  No results available');
       }
       
       console.log('');
     }
     
-    // Find best performers
-    console.log('Best Performers:');
+    // Overall statistics
+    console.log('--- Overall Statistics ---');
     
-    const categories = [
-      { type: 'local', size: '20k' },
-      { type: 'local', size: '100k' },
-      { type: 'proxy', size: '20k' },
-      { type: 'proxy', size: '100k' },
-    ];
+    // Best local performance
+    const bestLocal = this.results
+      .filter(r => r.Type === 'local')
+      .reduce((best, current) => 
+        parseFloat(current.Max_RPS) > parseFloat(best?.Max_RPS || 0) ? current : best, 
+        null
+      );
     
-    for (const category of categories) {
-      const filtered = this.results.filter(r => r.Type === category.type && r.Image_Size === category.size);
-      if (filtered.length > 0) {
-        const best = filtered.reduce((prev, current) => 
-          parseFloat(current.Max_RPS) > parseFloat(prev.Max_RPS) ? current : prev
-        );
-        console.log(`  ${category.type} ${category.size}: ${best.Framework} (${best.Max_RPS} RPS)`);
-      }
+    if (bestLocal) {
+      console.log(`Best Local Performance: ${bestLocal.Framework} (${bestLocal.Max_RPS} RPS for ${bestLocal.Image_Size})`);
+    }
+    
+    // Best proxy performance
+    const bestProxy = this.results
+      .filter(r => r.Type === 'proxy')
+      .reduce((best, current) => 
+        parseFloat(current.Max_RPS) > parseFloat(best?.Max_RPS || 0) ? current : best, 
+        null
+      );
+    
+    if (bestProxy) {
+      console.log(`Best Proxy Performance: ${bestProxy.Framework} (${bestProxy.Max_RPS} RPS for ${bestProxy.Image_Size})`);
     }
   }
 }

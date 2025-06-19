@@ -40,8 +40,8 @@ export const options = {
     'http_req_duration': [`p(95)<${RESPONSE_TIME_THRESHOLD}`],
     'errors': [`rate<${ERROR_THRESHOLD}`],
   },
-  // Disable default metrics we don't need
-  discardResponseBodies: true,
+  // Keep response bodies for validation
+  // discardResponseBodies: true,
   // Set timeout
   timeout: '30s',
 };
@@ -68,7 +68,7 @@ export default function () {
   imageLoadTime.add(loadTime);
   
   // Check response
-  const success = check(response, {
+  const checks = check(response, {
     'status is 200': (r) => r.status === 200,
     'content type is image': (r) => {
       const contentType = r.headers['Content-Type'] || r.headers['content-type'];
@@ -78,7 +78,9 @@ export default function () {
     'response time OK': (r) => r.timings.duration < RESPONSE_TIME_THRESHOLD,
   });
   
-  errorRate.add(!success);
+  // Only count as error if status is not 200
+  const isError = response.status !== 200;
+  errorRate.add(isError);
   
   // Small pause between requests to avoid overwhelming the server
   sleep(0.01);
@@ -109,21 +111,22 @@ export function handleSummary(data) {
   console.log(`Max VUs: ${MAX_VUS}`);
   console.log(`Duration: ${MAIN_DURATION}`);
   
-  if (data.metrics.http_reqs) {
-    console.log(`\nTotal Requests: ${data.metrics.http_reqs.values.count}`);
-    console.log(`RPS: ${data.metrics.http_reqs.values.rate.toFixed(2)}`);
+  if (data.metrics.http_reqs && data.metrics.http_reqs.values) {
+    console.log(`\nTotal Requests: ${data.metrics.http_reqs.values.count || 0}`);
+    console.log(`RPS: ${data.metrics.http_reqs.values.rate ? data.metrics.http_reqs.values.rate.toFixed(2) : 'N/A'}`);
   }
   
   if (data.metrics.http_req_duration) {
     const duration = data.metrics.http_req_duration.values;
     console.log(`\nResponse Time:`);
-    console.log(`  Avg: ${duration.avg.toFixed(2)}ms`);
-    console.log(`  P95: ${duration['p(95)'].toFixed(2)}ms`);
-    console.log(`  P99: ${duration['p(99)'].toFixed(2)}ms`);
+    console.log(`  Avg: ${duration.avg ? duration.avg.toFixed(2) : 'N/A'}ms`);
+    console.log(`  P95: ${duration['p(95)'] ? duration['p(95)'].toFixed(2) : 'N/A'}ms`);
+    console.log(`  P99: ${duration['p(99)'] ? duration['p(99)'].toFixed(2) : 'N/A'}ms`);
   }
   
-  if (data.metrics.http_req_failed) {
-    console.log(`\nError Rate: ${(data.metrics.http_req_failed.values.rate * 100).toFixed(2)}%`);
+  if (data.metrics.http_req_failed && data.metrics.http_req_failed.values) {
+    const errorRate = data.metrics.http_req_failed.values.rate || 0;
+    console.log(`\nError Rate: ${(errorRate * 100).toFixed(2)}%`);
   }
   
   // Save results to JSON file

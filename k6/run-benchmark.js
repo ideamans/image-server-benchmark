@@ -64,31 +64,15 @@ async function runK6Test(server, endpoint) {
 
 // Function to check if server is running
 async function checkServer(server) {
-  return new Promise((resolve) => {
-    const http = require('http');
-    const options = {
-      hostname: benchmarkConfig.serverIp,
-      port: server.port,
-      path: '/health',
+  try {
+    const response = await fetch(`http://${benchmarkConfig.serverIp}:${server.port}/health`, {
       method: 'GET',
-      timeout: 2000,
-    };
-    
-    const req = http.request(options, (res) => {
-      resolve(res.statusCode === 200);
+      signal: AbortSignal.timeout(2000),
     });
-    
-    req.on('error', () => {
-      resolve(false);
-    });
-    
-    req.on('timeout', () => {
-      req.destroy();
-      resolve(false);
-    });
-    
-    req.end();
-  });
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
 }
 
 // Main benchmark execution

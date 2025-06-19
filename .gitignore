@@ -251,3 +251,5 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+results/

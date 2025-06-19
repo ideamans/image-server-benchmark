@@ -185,23 +185,48 @@ fi
 # Install server dependencies
 echo ""
 echo "Installing server dependencies..."
-cd /workspace
+
+# Determine the working directory
+if [ -d "/workspace" ]; then
+    WORK_DIR="/workspace"
+elif [ -d "$HOME/image-server-benchmark" ]; then
+    WORK_DIR="$HOME/image-server-benchmark"
+elif [ -d "./servers" ]; then
+    WORK_DIR="."
+else
+    echo "Error: Could not find the project directory"
+    exit 1
+fi
+
+echo "Using work directory: $WORK_DIR"
+cd "$WORK_DIR"
+
+# Install common dependencies first
+echo "Installing common module dependencies..."
 cd servers/common && npm install
-cd ../typescript/fastify && npm install
-cd ../hono && npm install
+cd "$WORK_DIR"
+
+# Install TypeScript server dependencies
+echo "Installing TypeScript server dependencies..."
+cd servers/typescript/fastify && npm install
+cd "$WORK_DIR"
+cd servers/typescript/hono && npm install
+cd "$WORK_DIR"
 if command -v bun &> /dev/null; then
-  cd ../elysia && bun install
+  cd servers/typescript/elysia && bun install
+  cd "$WORK_DIR"
 fi
 
 # Install k6 dependencies
 echo ""
 echo "Installing k6 script dependencies..."
-cd /workspace/k6 && npm install
+cd k6 && npm install
+cd "$WORK_DIR"
 
 # Build servers
 echo ""
 echo "Building servers..."
-cd /workspace
+cd "$WORK_DIR"
 
 # Ensure all tools are in PATH for the build
 export PATH=/usr/local/go/bin:$PATH

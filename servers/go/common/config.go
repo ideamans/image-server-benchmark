@@ -48,7 +48,7 @@ func init() {
 	
 	// Initialize configuration
 	Config = &ServerConfig{
-		OriginURLBase:   getEnvOrDefault("ORIGIN_URL", getEnvOrDefault("ORIGIN_URL_BASE", "http://localhost:8080/")),
+		OriginURLBase:   getEnvOrDefault("ORIGIN_URL_BASE", "http://localhost:8080/"),
 		ServerStartPort: getEnvAsInt("SERVER_START_PORT", 3001),
 		WorkerThreads:   getEnvAsInt("SERVER_WORKER_THREADS", 0),
 		ImagesPath:      filepath.Join(projectRoot, "images"),

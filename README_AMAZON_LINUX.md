@@ -7,7 +7,7 @@
 ./run-amazon-linux.sh
 
 # 2. コンテナ内で実行
-./setup-amazon-linux.sh
+sudo ./setup-amazon-linux.sh
 
 # 3. サーバーを起動
 ./start-servers.sh
@@ -21,7 +21,7 @@ git clone https://github.com/idaemans/image-server-benchmark.git
 cd image-server-benchmark
 
 # 2. セットアップを実行（これだけ！）
-./setup-amazon-linux.sh
+sudo ./setup-amazon-linux.sh
 
 # 3. サーバーを起動
 ./start-servers.sh
@@ -80,6 +80,7 @@ make build-release
 
 ## 注意事項
 
+- `setup-amazon-linux.sh`の実行には`sudo`が必要です（システムパッケージのインストールがあるため）
 - セットアップには5-10分程度かかります
 - インターネット接続が必要です
 - 十分なディスク容量（3GB以上）が必要です

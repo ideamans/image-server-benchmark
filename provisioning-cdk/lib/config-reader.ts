@@ -5,6 +5,7 @@ export interface BenchmarkConfig {
   // AWS設定
   keyPairName: string;
   awsRegion: string;
+  awsProfile?: string;
 
   // インスタンス設定
   serverInstanceType: string;
@@ -35,6 +36,7 @@ export class ConfigReader {
       // AWS設定
       keyPairName: process.env.KEY_PAIR_NAME || '',
       awsRegion: process.env.AWS_REGION || 'us-east-1',
+      awsProfile: process.env.AWS_PROFILE,
 
       // インスタンス設定
       serverInstanceType: process.env.SERVER_INSTANCE_TYPE || 'c5.2xlarge',

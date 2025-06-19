@@ -47,6 +47,12 @@
   - Bun（最新版）
   - k6（ベンチマークツール）
 
+### AWS環境（CDKでEC2をプロビジョニングする場合）
+
+- AWS CLI がインストールされ、設定済みであること
+- AWS CDK がインストールされていること（`npm install -g aws-cdk`）
+- EC2キーペアが作成済みであること
+
 ## セットアップ手順
 
 ### 1. リポジトリのクローン
@@ -155,6 +161,53 @@ aws s3 cp images/100k.jpg s3://your-bucket/images/100k.jpg
 aws s3api put-object-acl --bucket your-bucket --key images/20k.jpg --acl public-read
 aws s3api put-object-acl --bucket your-bucket --key images/50k.jpg --acl public-read
 aws s3api put-object-acl --bucket your-bucket --key images/100k.jpg --acl public-read
+```
+
+## AWS CDKでEC2環境を構築する場合
+
+### CDKのセットアップ
+
+```bash
+# .envファイルでAWSプロファイルを指定（オプション）
+echo "AWS_PROFILE=myprofile" >> .env
+
+# キーペア名を設定
+echo "KEY_PAIR_NAME=benchmark-key" >> .env
+
+# CDKディレクトリに移動
+cd provisioning-cdk
+npm install
+
+# 初回のみ：CDKブートストラップ
+npx cdk bootstrap
+
+# スタックのデプロイ
+./deploy.sh
+
+# または手動で実行
+npx cdk deploy --parameters KeyPairName=benchmark-key
+```
+
+### デプロイ後の作業
+
+CDKの出力から、サーバーとクライアントのIPアドレスを確認し、SSHで接続します：
+
+```bash
+# サーバーインスタンスに接続
+ssh -i ~/.ssh/benchmark-key.pem ec2-user@<server-ip>
+
+# リポジトリがすでにクローンされているので
+cd image-server-benchmark
+./setup-amazon-linux.sh
+./start-servers.sh
+
+# クライアントインスタンスに接続（別ターミナル）
+ssh -i ~/.ssh/benchmark-key.pem ec2-user@<client-ip>
+
+cd image-server-benchmark
+./setup-amazon-linux.sh
+echo "SERVER_IP=<server-private-ip>" >> .env
+./run-benchmark.sh
 ```
 
 ## ベンチマークの実行

@@ -138,7 +138,7 @@ sudo -u ec2-user git clone https://github.com/idaemans/image-server-benchmark.gi
 sudo chown -R ec2-user:ec2-user image-server-benchmark
 
 # .envファイルの作成
-cat << 'EOF' > /home/ec2-user/image-server-benchmark/.env
+cat << EOF > /home/ec2-user/image-server-benchmark/.env
 ORIGIN_URL=${config.originUrlBase}
 ORIGIN_URL_BASE=${config.originUrlBase}
 SERVER_START_PORT=${config.serverStartPort}
@@ -198,7 +198,7 @@ rm go1.21.5.linux-amd64.tar.gz
 curl -fsSL https://bun.sh/install | sudo -u ec2-user bash
 
 # ポート設定の確認
-echo "Server will use ports ${config.serverStartPort} to $((${config.serverStartPort} + 8))"
+echo "Server will use ports \${SERVER_START_PORT} to \$((\${SERVER_START_PORT} + 8))"
 `;
   }
 

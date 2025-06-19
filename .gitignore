@@ -106,8 +106,9 @@ temp/
 
 # CDK
 provisioning-cdk/cdk.out/
-provisioning-cdk/*.js
-provisioning-cdk/*.d.ts
+provisioning-cdk/**/*.js
+provisioning-cdk/**/*.d.ts
+provisioning-cdk/cdk.context.json
 !provisioning-cdk/jest.config.js
 
 # Benchmark results

@@ -40,7 +40,7 @@ export class BenchmarkInstance extends Construct {
       instanceType: props.instanceType,
       machineImage: new ec2.AmazonLinuxImage({
         generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
-        cpuType: ec2.AmazonLinuxCpuType.ARM_64,
+        cpuType: ec2.AmazonLinuxCpuType.X86_64,
       }),
       keyName: props.keyName,
       securityGroup: props.securityGroup,

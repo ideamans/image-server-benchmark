@@ -42,8 +42,8 @@ export class ConfigReader {
       awsProfile: process.env.AWS_PROFILE,
 
       // インスタンス設定
-      serverInstanceType: process.env.SERVER_INSTANCE_TYPE || "m7a.medium",
-      clientInstanceType: process.env.CLIENT_INSTANCE_TYPE || "m7i.4xlarge",
+      serverInstanceType: process.env.SERVER_INSTANCE_TYPE || "t3.small",
+      clientInstanceType: process.env.CLIENT_INSTANCE_TYPE || "m7i.2xlarge",
 
       // アプリケーション設定
       originUrlBase:

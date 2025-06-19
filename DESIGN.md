@@ -39,7 +39,7 @@ AWS_REGION=us-east-1
 
 # インスタンスタイプ
 SERVER_INSTANCE_TYPE=t3.small
-CLIENT_INSTANCE_TYPE=t3.small
+CLIENT_INSTANCE_TYPE=m7i.2xlarge
 
 # ベンチマーク設定
 BENCHMARK_DURATION=60s
@@ -241,14 +241,14 @@ Fastify	TypeScript	20k	proxy	8932	111.8	156.7	0.05
 
 ### サーバー側（インスタンス A）
 
-- **インスタンスタイプ**: m7a.medium（ARM アーキテクチャ、開発・テスト用）
+- **インスタンスタイプ**: t3.small（x86_64 アーキテクチャ、開発・テスト用）
 - **vCPU**: 2
 - **メモリ**: 1GB
 - **ネットワーク**: 最大 5Gbps
 
 ### クライアント側（インスタンス B）
 
-- **インスタンスタイプ**: m7i.4xlarge（ARM アーキテクチャ、高性能ベンチマーク用）
+- **インスタンスタイプ**: m7i.2xlarge（x86_64 アーキテクチャ、高性能ベンチマーク用）
 - **vCPU**: 8
 - **メモリ**: 32GB
 - **ネットワーク**: 最大 10Gbps

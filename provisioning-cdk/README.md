@@ -127,8 +127,8 @@ aws cloudformation delete-stack --stack-name ImageServerBenchmarkStack
 `.env`ファイルで設定:
 
 ```
-SERVER_INSTANCE_TYPE=t4g.small
-CLIENT_INSTANCE_TYPE=m7i.4xlarge
+SERVER_INSTANCE_TYPE=t3.small
+CLIENT_INSTANCE_TYPE=m7i.2xlarge
 ```
 
 ### リージョンの変更
@@ -156,8 +156,8 @@ AWS_REGION=ap-northeast-1
 
 デフォルト設定での概算コスト（us-east-1）:
 
-- m7a.medium (サーバー): ~$0.0084/時間
-- m7i.4xlarge (クライアント): ~$0.308/時間
-- 合計: ~$0.317/時間
+- t3.small (サーバー): ~$0.0208/時間
+- m7i.2xlarge (クライアント): ~$0.384/時間
+- 合計: ~$0.405/時間
 
 **注意**: 使用後は必ずリソースを削除してください。

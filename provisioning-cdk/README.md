@@ -128,7 +128,7 @@ aws cloudformation delete-stack --stack-name ImageServerBenchmarkStack
 
 ```
 SERVER_INSTANCE_TYPE=t4g.small
-CLIENT_INSTANCE_TYPE=m6g.4xlarge
+CLIENT_INSTANCE_TYPE=m7i.4xlarge
 ```
 
 ### リージョンの変更
@@ -145,19 +145,19 @@ AWS_REGION=ap-northeast-1
 
 ## 自動シャットダウン機能
 
-安全のため、EC2インスタンスは起動から3時間後に自動的にシャットダウンされます。
+安全のため、EC2 インスタンスは起動から 3 時間後に自動的にシャットダウンされます。
 
-- デフォルト: 180分（3時間）後に自動シャットダウン
+- デフォルト: 180 分（3 時間）後に自動シャットダウン
 - `.env`で`AUTO_SHUTDOWN_MINUTES=0`を設定すると無効化できます
-- インスタンスにSSH接続すると、自動シャットダウンの警告が表示されます
+- インスタンスに SSH 接続すると、自動シャットダウンの警告が表示されます
 - 自動シャットダウンをキャンセルするには: `sudo systemctl stop auto-shutdown.timer`
 
 ## コスト見積もり
 
 デフォルト設定での概算コスト（us-east-1）:
 
-- m6g.medium (サーバー): ~$0.0084/時間
-- m6g.4xlarge (クライアント): ~$0.308/時間
+- m7a.medium (サーバー): ~$0.0084/時間
+- m7i.4xlarge (クライアント): ~$0.308/時間
 - 合計: ~$0.317/時間
 
 **注意**: 使用後は必ずリソースを削除してください。

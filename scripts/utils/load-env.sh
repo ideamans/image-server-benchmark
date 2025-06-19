@@ -24,8 +24,8 @@ fi
 : ${ERROR_THRESHOLD:=0.01}
 : ${RESPONSE_TIME_THRESHOLD:=1000}
 : ${AWS_REGION:="us-east-1"}
-: ${SERVER_INSTANCE_TYPE:="m6g.medium"}
-: ${CLIENT_INSTANCE_TYPE:="m6g.4xlarge"}
+: ${SERVER_INSTANCE_TYPE:="m7a.medium"}
+: ${CLIENT_INSTANCE_TYPE:="m7i.4xlarge"}
 : ${AUTO_SHUTDOWN_MINUTES:=180}
 
 # Export all variables
